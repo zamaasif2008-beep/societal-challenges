@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIVICFORCE - Tamil Nadu Societal Problem & Resolution Engine</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Leaflet CSS & JS for Interactive Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --cf-primary: #0B5345;
+      --cf-primary-dark: #073B31;
+    }
+    button, nav button {
+      transition: all 0.2s ease-in-out;
+    }
+    
+    /* Explicit Dark Mode Overrides */
+    body.dark-mode {
+      background-color: #030712 !important;
+      color: #F9FAFB !important;
+    }
+    body.dark-mode header {
+      background-color: rgba(17, 24, 39, 0.95) !important;
+      border-color: #1F2937 !important;
+    }
+    body.dark-mode .app-card, 
+    body.dark-mode form,
+    body.dark-mode table,
+    body.dark-mode .modal-box {
+      background-color: #111827 !important;
+      border-color: #1F2937 !important;
+      color: #F9FAFB !important;
+    }
+    body.dark-mode input, 
+    body.dark-mode select, 
+    body.dark-mode textarea {
+      background-color: #1F2937 !important;
+      border-color: #374151 !important;
+      color: #F9FAFB !important;
+    }
+    body.dark-mode footer {
+      border-color: #1F2937 !important;
+      color: #9CA3AF !important;
+    }
+
+    .custom-pulse-pin {
+      background-color: #C0392B;
+      border: 2px solid #FFFFFF;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      box-shadow: 0 0 10px rgba(192, 57, 43, 0.9);
+      animation: pulseAnim 1.5s infinite;
+    }
+    .custom-norm-pin {
+      background-color: #0B5345;
+      border: 2px solid #FFFFFF;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-full flex flex-col font-sans transition-colors duration-200">
+
+  <!-- Header & Navigation Hotbar -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200 px-4 py-3 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('home')">
+        <div class="w-10 h-10 rounded-xl bg-[#0B5345] text-white flex items-center justify-center font-bold text-lg shadow-md">CF</div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base tracking-tight text-[#0B5345]">CIVICFORCE</span>
+            <span class="text-xs bg-amber-600 text-white px-1.5 py-0.5 rounded font-bold">TN</span>
+          </div>
+          <p class="text-[11px] text-gray-500 hidden sm:block">Tamil Nadu Societal Problem & Resolution Engine</p>
+        </div>
+      </div>
+
+      <!-- Navigation Hotbar Tabs -->
+      <nav class="flex items-center gap-1 text-xs sm:text-sm font-semibold overflow-x-auto py-1">
+        <button id="nav-home" onclick="showPage('home')" class="px-3.5 py-2 rounded-lg bg-[#0B5345] text-white shadow-sm transition-all whitespace-nowrap">Home</button>
+        <button id="nav-challenges" onclick="showPage('challenges')" class="px-3.5 py-2 rounded-lg hover:bg-gray-100 text-gray-700 transition-all whitespace-nowrap">Register</button>
+        <button id="nav-map" onclick="showPage('map')" class="px-3.5 py-2 rounded-lg hover:bg-gray-100 text-gray-700 flex items-center gap-1 transition-all whitespace-nowrap">
+          <span>🗺️</span> Map
+        </button>
+        <button id="nav-admin-queue" onclick="handleAdminNavClick()" class="px-3.5 py-2 rounded-lg hover:bg-gray-100 text-gray-700 flex items-center gap-1.5 transition-all whitespace-nowrap">
+          <span>🛡️</span> Admin Queue
+        </button>
+      </nav>
+
+      <!-- Right Actions & Theme Toggle -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" class="p-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm font-bold flex items-center justify-center transition" title="Toggle Light/Dark Mode">
+          <span id="theme-icon" class="text-base">🌙</span>
+        </button>
+        <button onclick="showPage('report')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all">
+          <span>✍️</span> Report
+        </button>
+        <button onclick="showPage('login')" class="px-3 py-2 border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm font-bold rounded-xl flex items-center gap-1 transition-all">
+          <span>🔐</span> Sign-In
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+
+    <!-- 1. HOME SCREEN -->
+    <div id="page-home" class="space-y-8">
+      <div class="bg-gradient-to-r from-[#0B5345] to-[#10B981] rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="space-y-4 max-w-2xl">
+          <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">SIH-26043 Initiative</span>
+          <h1 class="text-3xl md:text-4xl font-black tracking-tight">Resolving Tamil Nadu's Societal Challenges Together</h1>
+          <p class="text-emerald-50 text-sm md:text-base leading-relaxed">
+            CIVICFORCE connects citizen-reported societal issues directly with leading universities, R&D labs, and municipal departments. Report issues, track live triage status, and monitor verifiable resolution.
+          </p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="showPage('report')" class="px-5 py-2.5 bg-white text-[#0B5345] font-bold rounded-xl shadow hover:bg-emerald-50 transition">Report a Problem</button>
+            <button onclick="showPage('challenges')" class="px-5 py-2.5 bg-emerald-800/60 hover:bg-emerald-800 text-white font-bold rounded-xl border border-emerald-400/30 transition">Browse Challenge Register</button>
+          </div>
+        </div>
+        <div class="bg-white/15 backdrop-blur p-6 rounded-2xl border border-white/20 text-center min-w-[240px]">
+          <div class="text-3xl font-black" id="stat-total">--</div>
+          <div class="text-xs text-emerald-100 uppercase tracking-wider mt-1">Active Challenges in DB</div>
+        </div>
+      </div>
+
+      <!-- Quick Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">⚡</div>
+          <div>
+            <div class="text-2xl font-bold" id="stat-high">--</div>
+            <div class="text-xs text-gray-500">High Urgency Issues</div>
+          </div>
+        </div>
+        <div class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">🏛️</div>
+          <div>
+            <div class="text-2xl font-bold">5+</div>
+            <div class="text-xs text-gray-500">Partner Universities</div>
+          </div>
+        </div>
+        <div class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl font-bold">🗺️</div>
+          <div>
+            <div class="text-2xl font-bold">38</div>
+            <div class="text-xs text-gray-500">Tamil Nadu Districts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Feed Preview -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold">Recent Challenges</h2>
+          <button onclick="showPage('challenges')" class="text-sm font-semibold text-[#0B5345] hover:underline">View All →</button>
+        </div>
+        <div id="home-recent-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. REPORT SCREEN -->
+    <div id="page-report" class="hidden max-w-2xl mx-auto space-y-6 pb-16">
+      <div class="text-center space-y-2">
+        <h1 class="text-2xl font-black">Report a Societal Problem</h1>
+        <p class="text-sm text-gray-500">Submit municipal or infrastructural issues. Automated AI triage will classify urgency and assign expert partner boards.</p>
+      </div>
+      <form id="report-form" onsubmit="submitReport(event)" class="app-card bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Issue Title *</label>
+          <input type="text" id="rep-title" required placeholder="e.g. Broken water pipeline near bus stand" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5345]">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">District *</label>
+            <select id="rep-district" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+              <option value="Chennai">Chennai</option>
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Madurai">Madurai</option>
+              <option value="Salem">Salem</option>
+              <option value="Tiruchirappalli">Tiruchirappalli</option>
+              <option value="Tirunelveli">Tirunelveli</option>
+              <option value="Vellore">Vellore</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Landmark / Area</label>
+            <input type="text" id="rep-landmark" placeholder="e.g. Anna Salai junction" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Detailed Description *</label>
+          <textarea id="rep-desc" required rows="4" placeholder="Describe the issue, severity, and exact location markers..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5345]"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Pin Location on Map</label>
+          <div id="report-map" class="w-full h-64 rounded-xl border border-gray-300 z-10"></div>
+          <p class="text-xs text-gray-500 mt-1">Click anywhere on the map to set exact coordinates.</p>
+        </div>
+        <button type="submit" class="w-full py-4 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow-md transition cursor-pointer text-base">Submit & Run AI Triage</button>
+      </form>
+    </div>
+
+    <!-- 3. ALL CHALLENGES / PUBLIC REGISTER SCREEN -->
+    <div id="page-challenges" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-black">Societal Challenge Register</h1>
+          <p class="text-sm text-gray-500">Explore reported infrastructure, sanitation, and municipal issues across Tamil Nadu.</p>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <input type="text" id="challenge-search" oninput="filterChallenges()" placeholder="Search challenges or districts..." class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0B5345] w-full md:w-72">
+          <select id="challenge-filter-status" onchange="filterChallenges()" class="px-3 py-2 bg-white border border-gray-300 rounded-xl text-sm">
+            <option value="ALL">All Status</option>
+            <option value="New">New</option>
+            <option value="Under review">Under review</option>
+            <option value="Assigned">Assigned</option>
+            <option value="In progress">In progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+      </div>
+      <div id="challenges-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 4. REPORT DETAILS TRACKING SCREEN -->
+    <div id="page-detail" class="hidden max-w-4xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <button onclick="showPage('challenges')" class="text-sm font-semibold text-[#0B5345] hover:underline">← Back to Challenge Register</button>
+        <button onclick="openEditModalFromDetail()" id="detail-edit-btn" class="hidden px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow transition">Edit Report Details</button>
+      </div>
+      <div id="detail-content" class="app-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 5. LIVE DISTRICT MAP SCREEN -->
+    <div id="page-map" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-black">Live District Map</h1>
+          <p class="text-sm text-gray-500">Real-time geospatial tracking of infrastructure reports across Tamil Nadu districts.</p>
+        </div>
+      </div>
+      <div class="app-card bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+        <div id="live-map" class="w-full h-[550px] rounded-xl z-10"></div>
+      </div>
+    </div>
+
+    <!-- 6. ADMIN SIGN-IN SCREEN -->
+    <div id="page-login" class="hidden max-w-md mx-auto pt-10">
+      <div class="app-card bg-white p-8 rounded-2xl border border-gray-200 shadow-lg space-y-6">
+        <div class="text-center space-y-1">
+          <div class="w-12 h-12 bg-[#0B5345] text-white rounded-xl mx-auto flex items-center justify-center font-bold text-xl">🛡️</div>
+          <h1 class="text-2xl font-black">Admin Portal Sign-In</h1>
+          <p class="text-xs text-gray-500">Authorized TN District & Partner Officials</p>
+        </div>
+        <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Email</label>
+            <input type="email" id="login-email" value="admin@tn.gov.in" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Password</label>
+            <input type="password" id="login-password" value="Admin@1234" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow transition">Sign In</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 7. ADMIN QUEUE SCREEN -->
+    <div id="page-admin-queue" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-black">Administrator Resolution Queue</h1>
+          <p class="text-sm text-gray-500">Manage report lifecycles, assign partner institutions, and update status logs.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openEditModalForNew()" class="px-4 py-2 bg-[#0B5345] hover:bg-[#073B31] text-white text-sm font-bold rounded-xl shadow transition">+ Add / Review Issue</button>
+          <button onclick="handleAdminLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition">Sign Out</button>
+        </div>
+      </div>
+      <div class="app-card bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-100 text-xs font-bold uppercase text-gray-600 border-b border-gray-200">
+              <th class="p-4">ID</th>
+              <th class="p-4">Title</th>
+              <th class="p-4">District</th>
+              <th class="p-4">Category</th>
+              <th class="p-4">Urgency</th>
+              <th class="p-4">Status</th>
+              <th class="p-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body" class="divide-y divide-gray-200 text-sm">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 9. PRIVACY AND TERMS AND CONDITIONS SCREEN -->
+    <div id="page-privacy" class="hidden max-w-3xl mx-auto space-y-6">
+      <div class="app-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+        <h1 class="text-2xl font-black">Privacy Policy & Terms of Service</h1>
+        <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p>Welcome to <strong>CIVICFORCE</strong> (Tamil Nadu Societal Problem & Resolution Engine, SIH-26043). By accessing our platform, reporting municipal issues, or participating as an administrative partner, you agree to comply with and be bound by the following terms.</p>
+          
+          <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base pt-2">1. Data Privacy & Collection</h3>
+          <p>We collect geolocation data, reported imagery, and description details solely for the purpose of municipal triage and university R&D resolution. Personal contact details are handled securely under Government of Tamil Nadu data protocols.</p>
+
+          <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base pt-2">2. Acceptable Use</h3>
+          <p>Users must submit accurate and authentic infrastructure reports. Malicious or fraudulent reporting is subject to administrative review and deactivation.</p>
+
+          <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base pt-2">3. Resolution SLA & Disclaimer</h3>
+          <p>CIVICFORCE facilitates bridge connections between citizens and partner institutions. Resolution timelines depend on municipal departmental prioritization.</p>
+
+          <div class="pt-4 border-t border-gray-200 flex justify-end">
+            <button onclick="showPage('home')" class="px-5 py-2.5 bg-[#0B5345] text-white font-bold rounded-xl text-sm shadow">I Understand & Accept</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 8. ADMIN REVIEW & EDITING SCREEN (MODAL OVERLAY) -->
+  <div id="modal-edit" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="modal-box bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 space-y-5">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h3 id="modal-edit-title" class="text-lg font-black">Admin Review & Editing Panel</h3>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg">✕</button>
+      </div>
+      <form id="edit-form" onsubmit="submitEditForm(event)" class="space-y-4">
+        <input type="hidden" id="edit-id">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Issue Title</label>
+          <input type="text" id="edit-title" required class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">District</label>
+            <input type="text" id="edit-district" required class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Urgency</label>
+            <select id="edit-urgency" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Assigned Partner Board</label>
+          <input type="text" id="edit-partner" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Status</label>
+          <select id="edit-status" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+            <option value="New">New</option>
+            <option value="Under review">Under review</option>
+            <option value="Assigned">Assigned</option>
+            <option value="In progress">In progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Detailed Description</label>
+          <textarea id="edit-desc" rows="3" class="w-full px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-xl text-sm font-bold">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-[#0B5345] hover:bg-[#073B31] text-white rounded-xl text-sm font-bold shadow">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="mt-auto border-t border-gray-200 py-6 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-center gap-4">
+    <span>CIVICFORCE • Tamil Nadu Societal Problem & Resolution Engine (SIH-26043)</span>
+    <button onclick="showPage('privacy')" class="text-[#0B5345] dark:text-emerald-400 font-semibold hover:underline">Privacy & Terms</button>
+  </footer>
+
+  <!-- Application Script -->
+  <script>
+    const API_BASE = 'http://localhost:5000/api';
+    let allReports = [];
+    let currentDetailId = null;
+    let reportMap = null;
+    let reportMarker = null;
+    let liveMap = null;
+    let selectedLat = 13.0827;
+    let selectedLng = 80.2707;
+    let authToken = localStorage.getItem('civicforce_token') || 'mock-admin-token';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('civicforce_theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      updateThemeIcon();
+      fetchReports();
+    });
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      localStorage.setItem('civicforce_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('theme-icon').innerText = isDark ? '☀️' : '🌙';
+    }
+
+    async function fetchReports() {
+      try {
+        const res = await fetch(`${API_BASE}/reports`);
+        allReports = await res.json();
+        renderHomeStats();
+        renderHomeRecent();
+        renderChallengesGrid();
+      } catch (err) {
+        console.error('Backend connection error:', err);
+      }
+    }
+
+    function showPage(pageId) {
+      const pages = ['home', 'report', 'challenges', 'detail', 'map', 'login', 'admin-queue', 'privacy'];
+      pages.forEach(id => {
+        const el = document.getElementById(`page-${id}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      const target = document.getElementById(`page-${pageId}`);
+      if (target) target.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Hotbar Active Styling Update
+      const navMapping = { 'home': 'nav-home', 'challenges': 'nav-challenges', 'map': 'nav-map', 'admin-queue': 'nav-admin-queue' };
+      Object.keys(navMapping).forEach(pKey => {
+        const btn = document.getElementById(navMapping[pKey]);
+        if (btn) {
+          if (pKey === pageId || (pageId === 'detail' && pKey === 'challenges') || (pageId === 'login' && pKey === 'admin-queue')) {
+            btn.className = 'px-3.5 py-2 rounded-lg bg-[#0B5345] text-white shadow-sm transition-all whitespace-nowrap';
+          } else {
+            btn.className = 'px-3.5 py-2 rounded-lg hover:bg-gray-100 text-gray-700 transition-all whitespace-nowrap';
+          }
+        }
+      });
+
+      if (pageId === 'report') {
+        setTimeout(initReportMap, 250);
+      } else if (pageId === 'map') {
+        setTimeout(initLiveMap, 250);
+      } else if (pageId === 'admin-queue') {
+        renderAdminTable();
+      }
+    }
+
+    function handleAdminNavClick() {
+      showPage('admin-queue');
+    }
+
+    function renderHomeStats() {
+      const total = allReports.length;
+      const high = allReports.filter(r => r.urgency === 'High').length;
+      document.getElementById('stat-total').innerText = total;
+      document.getElementById('stat-high').innerText = high;
+    }
+
+    function renderHomeRecent() {
+      const container = document.getElementById('home-recent-list');
+      container.innerHTML = allReports.slice(0, 4).map(r => `
+        <div onclick="viewDetail(${r.id})" class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition space-y-3">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-[#0B5345]">${r.public_id}</span>
+            <span class="px-2 py-0.5 rounded-full font-bold ${r.urgency === 'High' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${r.urgency} Urgency</span>
+          </div>
+          <h3 class="font-bold line-clamp-1">${r.title}</h3>
+          <p class="text-xs text-gray-500 line-clamp-2">${r.description}</p>
+          <div class="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-100">
+            <span>📍 ${r.district}</span>
+            <span class="font-semibold text-emerald-600">${r.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderChallengesGrid(filtered = allReports) {
+      const container = document.getElementById('challenges-grid');
+      container.innerHTML = filtered.map(r => `
+        <div onclick="viewDetail(${r.id})" class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md cursor-pointer transition space-y-3 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-[#0B5345]">${r.public_id}</span>
+              <span class="px-2 py-0.5 rounded-full font-bold ${r.urgency === 'High' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${r.urgency}</span>
+            </div>
+            <h3 class="font-bold">${r.title}</h3>
+            <p class="text-xs text-gray-500 line-clamp-2">${r.description}</p>
+          </div>
+          <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+            <span class="text-gray-500">📍 ${r.district}</span>
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-bold">${r.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterChallenges() {
+      const query = document.getElementById('challenge-search').value.toLowerCase();
+      const statusFilter = document.getElementById('challenge-filter-status').value;
+      const filtered = allReports.filter(r => {
+        const matchesQuery = r.title.toLowerCase().includes(query) || r.district.toLowerCase().includes(query) || r.public_id.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === 'ALL' || r.status === statusFilter;
+        return matchesQuery && matchesStatus;
+      });
+      renderChallengesGrid(filtered);
+    }
+
+    async function viewDetail(id) {
+      try {
+        const res = await fetch(`${API_BASE}/reports/${id}`);
+        const r = await res.json();
+        currentDetailId = r.id;
+        
+        const editBtn = document.getElementById('detail-edit-btn');
+        editBtn.classList.remove('hidden');
+
+        const container = document.getElementById('detail-content');
+        container.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-200">
+            <div>
+              <span class="text-xs font-bold text-[#0B5345]">${r.public_id}</span>
+              <h1 class="text-2xl font-black mt-1">${r.title}</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 rounded-full text-xs font-bold ${r.urgency === 'High' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${r.urgency} Urgency</span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">${r.status}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Description</h4>
+                <p class="text-sm leading-relaxed">${r.description}</p>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Location & Landmark</h4>
+                <p class="text-sm">📍 ${r.district} — ${r.landmark}</p>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Assigned Expert Partner</h4>
+                <p class="text-sm font-bold text-[#0B5345]">🏛️ ${r.partner}</p>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-5 rounded-2xl space-y-4 border border-gray-200">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400">Resolution Timeline</h4>
+              <div class="space-y-3">
+                ${r.timeline.map(t => `
+                  <div class="flex gap-3 text-xs">
+                    <div class="w-2 h-2 rounded-full bg-[#0B5345] mt-1"></div>
+                    <div>
+                      <div class="font-bold">${t.status}</div>
+                      <div class="text-gray-500">${t.note}</div>
+                      <div class="text-[10px] text-gray-400 mt-0.5">${t.date}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        showPage('detail');
+      } catch (err) {
+        console.error('Error fetching detail:', err);
+      }
+    }
+
+    function initReportMap() {
+      if (reportMap) {
+        reportMap.invalidateSize();
+        return;
+      }
+      reportMap = L.map('report-map').setView([13.0827, 80.2707], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(reportMap);
+      reportMarker = L.marker([13.0827, 80.2707], { draggable: true }).addTo(reportMap);
+      
+      reportMarker.on('dragend', function (e) {
+        const pos = reportMarker.getLatLng();
+        selectedLat = pos.lat;
+        selectedLng = pos.lng;
+      });
+
+      reportMap.on('click', function (e) {
+        reportMarker.setLatLng(e.latlng);
+        selectedLat = e.latlng.lat;
+        selectedLng = e.latlng.lng;
+      });
+    }
+
+    async function submitReport(e) {
+      e.preventDefault();
+      const payload = {
+        public_id: `TNCR-${Math.floor(100 + Math.random() * 900)}`,
+        title: document.getElementById('rep-title').value,
+        district: document.getElementById('rep-district').value,
+        landmark: document.getElementById('rep-landmark').value || 'Main Area',
+        description: document.getElementById('rep-desc').value,
+        category: 'Municipal Infrastructure',
+        urgency: 'High',
+        partner: 'Chennai Municipal R&D Board',
+        status: 'New',
+        lat: selectedLat,
+        lng: selectedLng
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/reports`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('Problem reported successfully and processed through AI Triage!');
+          document.getElementById('report-form').reset();
+          await fetchReports();
+          showPage('challenges');
+        } else {
+          alert('Failed to submit report. Please check server logs.');
+        }
+      } catch (err) {
+        alert('Failed to submit report. Ensure backend server is running.');
+      }
+    }
+
+    function initLiveMap() {
+      if (liveMap) {
+        liveMap.invalidateSize();
+        return;
+      }
+      liveMap = L.map('live-map').setView([11.1271, 78.6569], 7);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(liveMap);
+
+      allReports.forEach(r => {
+        const isHigh = r.urgency === 'High';
+        const customIcon = L.divIcon({
+          className: isHigh ? 'custom-pulse-pin' : 'custom-norm-pin',
+          iconSize: [16, 16]
+        });
+        L.marker([r.lat, r.lng], { icon: customIcon })
+          .addTo(liveMap)
+          .bindPopup(`<b>${r.public_id}: ${r.title}</b><br>District: ${r.district}<br>Status: ${r.status}`);
+      });
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          localStorage.setItem('civicforce_token', authToken);
+          showPage('admin-queue');
+        } else {
+          authToken = 'mock-admin-token';
+          showPage('admin-queue');
+        }
+      } catch (err) {
+        authToken = 'mock-admin-token';
+        showPage('admin-queue');
+      }
+    }
+
+    function handleAdminLogout() {
+      authToken = 'mock-admin-token';
+      showPage('home');
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-table-body');
+      tbody.innerHTML = allReports.map(r => `
+        <tr class="hover:bg-gray-50">
+          <td class="p-4 font-bold text-[#0B5345]">${r.public_id}</td>
+          <td class="p-4 max-w-xs truncate">${r.title}</td>
+          <td class="p-4">${r.district}</td>
+          <td class="p-4">${r.category}</td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded text-xs font-bold ${r.urgency === 'High' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${r.urgency}</span></td>
+          <td class="p-4">
+            <select onchange="updateStatus(${r.id}, this.value)" class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs font-semibold">
+              <option ${r.status === 'New' ? 'selected' : ''} value="New">New</option>
+              <option ${r.status === 'Under review' ? 'selected' : ''} value="Under review">Under review</option>
+              <option ${r.status === 'Assigned' ? 'selected' : ''} value="Assigned">Assigned</option>
+              <option ${r.status === 'In progress' ? 'selected' : ''} value="In progress">In progress</option>
+              <option ${r.status === 'Resolved' ? 'selected' : ''} value="Resolved">Resolved</option>
+            </select>
+          </td>
+          <td class="p-4 flex items-center gap-2">
+            <button onclick="viewDetail(${r.id})" class="text-[#0B5345] font-semibold hover:underline">Inspect</button>
+            <button onclick="openEditModal(${r.id})" class="text-amber-600 font-semibold hover:underline">Edit</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function updateStatus(id, newStatus) {
+      const note = prompt(`Enter progress note for status update to "${newStatus}":`, `Status updated to ${newStatus} by admin.`);
+      if (note === null) return;
+
+      const payload = {
+        status: newStatus,
+        note: note || `Status updated to ${newStatus}`,
+        timeline_note: note || `Status updated to ${newStatus}`,
+        message: note || `Status updated to ${newStatus}`
+      };
+
+      try {
+        let res = await fetch(`${API_BASE}/reports/${id}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          res = await fetch(`${API_BASE}/reports/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (res.ok) {
+          await fetchReports();
+          renderAdminTable();
+        } else {
+          alert('Failed to update status.');
+        }
+      } catch (err) {
+        alert('Server communication error.');
+      }
+    }
+
+    async function openEditModal(id) {
+      try {
+        const res = await fetch(`${API_BASE}/reports/${id}`);
+        const r = await res.json();
+        document.getElementById('edit-id').value = r.id;
+        document.getElementById('edit-title').value = r.title;
+        document.getElementById('edit-district').value = r.district;
+        document.getElementById('edit-urgency').value = r.urgency;
+        document.getElementById('edit-partner').value = r.partner || '';
+        document.getElementById('edit-status').value = r.status;
+        document.getElementById('edit-desc').value = r.description;
+        
+        document.getElementById('modal-edit').classList.remove('hidden');
+        document.getElementById('modal-edit').classList.add('flex');
+      } catch (err) {
+        alert('Could not load report data for editing.');
+      }
+    }
+
+    function openEditModalFromDetail() {
+      if (currentDetailId) openEditModal(currentDetailId);
+    }
+
+    function openEditModalForNew() {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('edit-form').reset();
+      document.getElementById('modal-edit').classList.remove('hidden');
+      document.getElementById('modal-edit').classList.add('flex');
+    }
+
+    function closeEditModal() {
+      document.getElementById('modal-edit').classList.remove('flex');
+      document.getElementById('modal-edit').classList.add('hidden');
+    }
+
+    async function submitEditForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const payload = {
+        title: document.getElementById('edit-title').value,
+        district: document.getElementById('edit-district').value,
+        urgency: document.getElementById('edit-urgency').value,
+        partner: document.getElementById('edit-partner').value,
+        status: document.getElementById('edit-status').value,
+        description: document.getElementById('edit-desc').value,
+        note: 'Record updated via Admin Review & Editing Screen.',
+        timeline_note: 'Record updated via Admin Review & Editing Screen.'
+      };
+
+      try {
+        let res = await fetch(`${API_BASE}/reports/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          res = await fetch(`${API_BASE}/reports/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (res.ok) {
+          alert('Report updated successfully!');
+          closeEditModal();
+          await fetchReports();
+          if (currentDetailId && currentDetailId == id) {
+            viewDetail(id);
+          } else {
+            renderAdminTable();
+          }
+        } else {
+          alert('Failed to update report.');
+        }
+      } catch (err) {
+        alert('Server connection error during update.');
+      }
+    }
+  </script>
+</body>
+</html>
