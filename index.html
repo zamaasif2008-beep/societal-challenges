@@ -85,7 +85,7 @@
             <span class="font-extrabold text-base tracking-tight text-[#0B5345]">CIVICFORCE</span>
             <span class="text-xs bg-amber-600 text-white px-1.5 py-0.5 rounded font-bold">TN</span>
           </div>
-          <p class="text-[11px] text-gray-500 hidden sm:block">Tamil Nadu Societal Problem & Resolution Engine</p>
+          <p id="lbl-subtitle" class="text-[11px] text-gray-500 hidden sm:block">Tamil Nadu Societal Problem & Resolution Engine</p>
         </div>
       </div>
 
@@ -101,16 +101,25 @@
         </button>
       </nav>
 
-      <!-- Right Actions & Theme Toggle -->
+      <!-- Right Actions, Multi-Language & Theme Toggle -->
       <div class="flex items-center gap-2">
+        <!-- Indian Languages Selector -->
+        <select id="lang-selector" onchange="changeLanguage(this.value)" class="px-2.5 py-2 bg-gray-100 border border-gray-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#0B5345]">
+          <option value="en">English</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="ml">മലയാളം (Malayalam)</option>
+        </select>
+
         <button onclick="toggleTheme()" class="p-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm font-bold flex items-center justify-center transition" title="Toggle Light/Dark Mode">
           <span id="theme-icon" class="text-base">🌙</span>
         </button>
         <button onclick="showPage('report')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all">
-          <span>✍️</span> Report
+          <span>✍️</span> <span id="btn-report-nav">Report</span>
         </button>
         <button onclick="showPage('login')" class="px-3 py-2 border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm font-bold rounded-xl flex items-center gap-1 transition-all">
-          <span>🔐</span> Sign-In
+          <span>🔐</span> <span id="btn-signin-nav">Sign-In</span>
         </button>
       </div>
 
@@ -125,18 +134,18 @@
       <div class="bg-gradient-to-r from-[#0B5345] to-[#10B981] rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="space-y-4 max-w-2xl">
           <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">SIH-26043 Initiative</span>
-          <h1 class="text-3xl md:text-4xl font-black tracking-tight">Resolving Tamil Nadu's Societal Challenges Together</h1>
-          <p class="text-emerald-50 text-sm md:text-base leading-relaxed">
+          <h1 id="home-title" class="text-3xl md:text-4xl font-black tracking-tight">Resolving Tamil Nadu's Societal Challenges Together</h1>
+          <p id="home-desc" class="text-emerald-50 text-sm md:text-base leading-relaxed">
             CIVICFORCE connects citizen-reported societal issues directly with leading universities, R&D labs, and municipal departments. Report issues, track live triage status, and monitor verifiable resolution.
           </p>
           <div class="flex flex-wrap gap-3 pt-2">
-            <button onclick="showPage('report')" class="px-5 py-2.5 bg-white text-[#0B5345] font-bold rounded-xl shadow hover:bg-emerald-50 transition">Report a Problem</button>
-            <button onclick="showPage('challenges')" class="px-5 py-2.5 bg-emerald-800/60 hover:bg-emerald-800 text-white font-bold rounded-xl border border-emerald-400/30 transition">Browse Challenge Register</button>
+            <button onclick="showPage('report')" id="home-btn-report" class="px-5 py-2.5 bg-white text-[#0B5345] font-bold rounded-xl shadow hover:bg-emerald-50 transition">Report a Problem</button>
+            <button onclick="showPage('challenges')" id="home-btn-browse" class="px-5 py-2.5 bg-emerald-800/60 hover:bg-emerald-800 text-white font-bold rounded-xl border border-emerald-400/30 transition">Browse Challenge Register</button>
           </div>
         </div>
         <div class="bg-white/15 backdrop-blur p-6 rounded-2xl border border-white/20 text-center min-w-[240px]">
           <div class="text-3xl font-black" id="stat-total">--</div>
-          <div class="text-xs text-emerald-100 uppercase tracking-wider mt-1">Active Challenges in DB</div>
+          <div id="stat-label-active" class="text-xs text-emerald-100 uppercase tracking-wider mt-1">Active Challenges in DB</div>
         </div>
       </div>
 
@@ -146,21 +155,21 @@
           <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">⚡</div>
           <div>
             <div class="text-2xl font-bold" id="stat-high">--</div>
-            <div class="text-xs text-gray-500">High Urgency Issues</div>
+            <div id="stat-label-high" class="text-xs text-gray-500">High Urgency Issues</div>
           </div>
         </div>
         <div class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">🏛️</div>
           <div>
             <div class="text-2xl font-bold">5+</div>
-            <div class="text-xs text-gray-500">Partner Universities</div>
+            <div id="stat-label-univ" class="text-xs text-gray-500">Partner Universities</div>
           </div>
         </div>
         <div class="app-card bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
           <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl font-bold">🗺️</div>
           <div>
             <div class="text-2xl font-bold">38</div>
-            <div class="text-xs text-gray-500">Tamil Nadu Districts</div>
+            <div id="stat-label-dist" class="text-xs text-gray-500">Tamil Nadu Districts</div>
           </div>
         </div>
       </div>
@@ -168,8 +177,8 @@
       <!-- Recent Feed Preview -->
       <div class="space-y-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold">Recent Challenges</h2>
-          <button onclick="showPage('challenges')" class="text-sm font-semibold text-[#0B5345] hover:underline">View All →</button>
+          <h2 id="recent-heading" class="text-xl font-bold">Recent Challenges</h2>
+          <button onclick="showPage('challenges')" id="recent-view-all" class="text-sm font-semibold text-[#0B5345] hover:underline">View All →</button>
         </div>
         <div id="home-recent-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Populated dynamically -->
@@ -180,17 +189,17 @@
     <!-- 2. REPORT SCREEN -->
     <div id="page-report" class="hidden max-w-2xl mx-auto space-y-6 pb-16">
       <div class="text-center space-y-2">
-        <h1 class="text-2xl font-black">Report a Societal Problem</h1>
-        <p class="text-sm text-gray-500">Submit municipal or infrastructural issues. Automated AI triage will classify urgency and assign expert partner boards.</p>
+        <h1 id="rep-page-title" class="text-2xl font-black">Report a Societal Problem</h1>
+        <p id="rep-page-subtitle" class="text-sm text-gray-500">Submit municipal or infrastructural issues. Automated AI triage will classify urgency and assign expert partner boards.</p>
       </div>
       <form id="report-form" onsubmit="submitReport(event)" class="app-card bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Issue Title *</label>
+          <label id="lbl-title" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Issue Title *</label>
           <input type="text" id="rep-title" required placeholder="e.g. Broken water pipeline near bus stand" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5345]">
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">District *</label>
+            <label id="lbl-district" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">District *</label>
             <select id="rep-district" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
               <option value="Chennai">Chennai</option>
               <option value="Coimbatore">Coimbatore</option>
@@ -202,20 +211,20 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Landmark / Area</label>
+            <label id="lbl-landmark" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Landmark / Area</label>
             <input type="text" id="rep-landmark" placeholder="e.g. Anna Salai junction" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Detailed Description *</label>
+          <label id="lbl-desc" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Detailed Description *</label>
           <textarea id="rep-desc" required rows="4" placeholder="Describe the issue, severity, and exact location markers..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5345]"></textarea>
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Pin Location on Map</label>
+          <label id="lbl-pinmap" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-2">Pin Location on Map</label>
           <div id="report-map" class="w-full h-64 rounded-xl border border-gray-300 z-10"></div>
-          <p class="text-xs text-gray-500 mt-1">Click anywhere on the map to set exact coordinates.</p>
+          <p id="lbl-map-hint" class="text-xs text-gray-500 mt-1">Click anywhere on the map to set exact coordinates.</p>
         </div>
-        <button type="submit" class="w-full py-4 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow-md transition cursor-pointer text-base">Submit & Run AI Triage</button>
+        <button type="submit" id="btn-submit-report" class="w-full py-4 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow-md transition cursor-pointer text-base">Submit & Run AI Triage</button>
       </form>
     </div>
 
@@ -223,8 +232,8 @@
     <div id="page-challenges" class="hidden space-y-6">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-black">Societal Challenge Register</h1>
-          <p class="text-sm text-gray-500">Explore reported infrastructure, sanitation, and municipal issues across Tamil Nadu.</p>
+          <h1 id="reg-title" class="text-2xl font-black">Societal Challenge Register</h1>
+          <p id="reg-subtitle" class="text-sm text-gray-500">Explore reported infrastructure, sanitation, and municipal issues across Tamil Nadu.</p>
         </div>
         <div class="flex items-center gap-3 w-full md:w-auto">
           <input type="text" id="challenge-search" oninput="filterChallenges()" placeholder="Search challenges or districts..." class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0B5345] w-full md:w-72">
@@ -246,7 +255,7 @@
     <!-- 4. REPORT DETAILS TRACKING SCREEN -->
     <div id="page-detail" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="flex items-center justify-between">
-        <button onclick="showPage('challenges')" class="text-sm font-semibold text-[#0B5345] hover:underline">← Back to Challenge Register</button>
+        <button onclick="showPage('challenges')" id="btn-back-reg" class="text-sm font-semibold text-[#0B5345] hover:underline">← Back to Challenge Register</button>
         <button onclick="openEditModalFromDetail()" id="detail-edit-btn" class="hidden px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow transition">Edit Report Details</button>
       </div>
       <div id="detail-content" class="app-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
@@ -258,8 +267,8 @@
     <div id="page-map" class="hidden space-y-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-black">Live District Map</h1>
-          <p class="text-sm text-gray-500">Real-time geospatial tracking of infrastructure reports across Tamil Nadu districts.</p>
+          <h1 id="map-page-title" class="text-2xl font-black">Live District Map</h1>
+          <p id="map-page-subtitle" class="text-sm text-gray-500">Real-time geospatial tracking of infrastructure reports across Tamil Nadu districts.</p>
         </div>
       </div>
       <div class="app-card bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
@@ -272,8 +281,8 @@
       <div class="app-card bg-white p-8 rounded-2xl border border-gray-200 shadow-lg space-y-6">
         <div class="text-center space-y-1">
           <div class="w-12 h-12 bg-[#0B5345] text-white rounded-xl mx-auto flex items-center justify-center font-bold text-xl">🛡️</div>
-          <h1 class="text-2xl font-black">Admin Portal Sign-In</h1>
-          <p class="text-xs text-gray-500">Authorized TN District & Partner Officials</p>
+          <h1 id="login-title" class="text-2xl font-black">Admin Portal Sign-In</h1>
+          <p id="login-subtitle" class="text-xs text-gray-500">Authorized TN District & Partner Officials</p>
         </div>
         <form onsubmit="handleAdminLogin(event)" class="space-y-4">
           <div>
@@ -284,7 +293,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Password</label>
             <input type="password" id="login-password" value="Admin@1234" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
           </div>
-          <button type="submit" class="w-full py-3 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow transition">Sign In</button>
+          <button type="submit" id="btn-signin-submit" class="w-full py-3 bg-[#0B5345] hover:bg-[#073B31] text-white font-bold rounded-xl shadow transition">Sign In</button>
         </form>
       </div>
     </div>
@@ -293,12 +302,12 @@
     <div id="page-admin-queue" class="hidden space-y-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-black">Administrator Resolution Queue</h1>
-          <p class="text-sm text-gray-500">Manage report lifecycles, assign partner institutions, and update status logs.</p>
+          <h1 id="admin-q-title" class="text-2xl font-black">Administrator Resolution Queue</h1>
+          <p id="admin-q-subtitle" class="text-sm text-gray-500">Manage report lifecycles, assign partner institutions, and update status logs.</p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="openEditModalForNew()" class="px-4 py-2 bg-[#0B5345] hover:bg-[#073B31] text-white text-sm font-bold rounded-xl shadow transition">+ Add / Review Issue</button>
-          <button onclick="handleAdminLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition">Sign Out</button>
+          <button onclick="openEditModalForNew()" id="admin-btn-add" class="px-4 py-2 bg-[#0B5345] hover:bg-[#073B31] text-white text-sm font-bold rounded-xl shadow transition">+ Add / Review Issue</button>
+          <button onclick="handleAdminLogout()" id="admin-btn-logout" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl transition">Sign Out</button>
         </div>
       </div>
       <div class="app-card bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
@@ -306,12 +315,12 @@
           <thead>
             <tr class="bg-gray-100 text-xs font-bold uppercase text-gray-600 border-b border-gray-200">
               <th class="p-4">ID</th>
-              <th class="p-4">Title</th>
-              <th class="p-4">District</th>
-              <th class="p-4">Category</th>
-              <th class="p-4">Urgency</th>
-              <th class="p-4">Status</th>
-              <th class="p-4">Actions</th>
+              <th id="th-title" class="p-4">Title</th>
+              <th id="th-district" class="p-4">District</th>
+              <th id="th-category" class="p-4">Category</th>
+              <th id="th-urgency" class="p-4">Urgency</th>
+              <th id="th-status" class="p-4">Status</th>
+              <th id="th-actions" class="p-4">Actions</th>
             </tr>
           </thead>
           <tbody id="admin-table-body" class="divide-y divide-gray-200 text-sm">
@@ -415,6 +424,241 @@
     let selectedLat = 13.0827;
     let selectedLng = 80.2707;
     let authToken = localStorage.getItem('civicforce_token') || 'mock-admin-token';
+    let currentLang = 'en';
+
+    // Multi-language dictionary
+    const translations = {
+      en: {
+        navHome: "Home",
+        navRegister: "Register",
+        navMap: "Map",
+        navAdmin: "Admin Queue",
+        report: "Report",
+        signin: "Sign-In",
+        subtitle: "Tamil Nadu Societal Problem & Resolution Engine",
+        homeTitle: "Resolving Tamil Nadu's Societal Challenges Together",
+        homeDesc: "CIVICFORCE connects citizen-reported societal issues directly with leading universities, R&D labs, and municipal departments. Report issues, track live triage status, and monitor verifiable resolution.",
+        btnReportProb: "Report a Problem",
+        btnBrowseReg: "Browse Challenge Register",
+        statActive: "Active Challenges in DB",
+        statHigh: "High Urgency Issues",
+        statUniv: "Partner Universities",
+        statDist: "Tamil Nadu Districts",
+        recentHeading: "Recent Challenges",
+        viewAll: "View All →",
+        repPageTitle: "Report a Societal Problem",
+        repPageSub: "Submit municipal or infrastructural issues. Automated AI triage will classify urgency and assign expert partner boards.",
+        lblTitle: "Issue Title *",
+        lblDistrict: "District *",
+        lblLandmark: "Landmark / Area",
+        lblDesc: "Detailed Description *",
+        lblPinMap: "Pin Location on Map",
+        mapHint: "Click anywhere on the map to set exact coordinates.",
+        btnSubmitReport: "Submit & Run AI Triage",
+        regTitle: "Societal Challenge Register",
+        regSub: "Explore reported infrastructure, sanitation, and municipal issues across Tamil Nadu.",
+        backReg: "← Back to Challenge Register",
+        mapTitle: "Live District Map",
+        mapSub: "Real-time geospatial tracking of infrastructure reports across Tamil Nadu districts.",
+        loginTitle: "Admin Portal Sign-In",
+        loginSub: "Authorized TN District & Partner Officials",
+        btnSignin: "Sign In",
+        adminQTitle: "Administrator Resolution Queue",
+        adminQSub: "Manage report lifecycles, assign partner institutions, and update status logs.",
+        btnAddIssue: "+ Add / Review Issue",
+        btnLogout: "Sign Out",
+        thTitle: "Title",
+        thDistrict: "District",
+        thCat: "Category",
+        thUrgency: "Urgency",
+        thStatus: "Status",
+        thActions: "Actions"
+      },
+      ta: {
+        navHome: "முகப்பு",
+        navRegister: "பதிவு",
+        navMap: "வரைபடம்",
+        navAdmin: "நிர்வாக வரிசை",
+        report: "புகார்",
+        signin: "உள்நுழை",
+        subtitle: "தமிழ்நாடு சமூக சிக்கல் & தீர்வு இயந்திரம்",
+        homeTitle: "தமிழ்நாட்டின் சமூக சவால்களை ஒன்றாக தீர்ப்போம்",
+        homeDesc: "குடிமக்கள் புகாரளித்த சமூகப் பிரச்சினைகளை முன்னணி பல்கலைக்கழகங்கள் மற்றும் நகராட்சி துறைகளுடன் CIVICFORCE இணைக்கிறது.",
+        btnReportProb: "சிக்கலைப் புகாரளிக்கவும்",
+        btnBrowseReg: "சவால் பதிவேட்டைப் பார்க்கவும்",
+        statActive: "செயலில் உள்ள சவால்கள்",
+        statHigh: "அவசர சிக்கல்கள்",
+        statUniv: "கூட்டுப் பல்கலைக்கழகங்கள்",
+        statDist: "தமிழ்நாடு மாவட்டங்கள்",
+        recentHeading: "சமீபத்திய சவால்கள்",
+        viewAll: "அனைத்தையும் காண்க →",
+        repPageTitle: "சமூக சிக்கலைப் புகாரளிக்கவும்",
+        repPageSub: "நகராட்சி அல்லது உள்கட்டமைப்பு சிக்கல்களைச் சமர்ப்பிக்கவும்.",
+        lblTitle: "சிக்கல் தலைப்பு *",
+        lblDistrict: "மாவட்டம் *",
+        lblLandmark: "அடையாளம் / பகுதி",
+        lblDesc: "விரிவான விளக்கம் *",
+        lblPinMap: "வரைபடத்தில் குறிக்கவும்",
+        mapHint: "துல்லியமான ஆயத்தொலைவுகளை அமைக்க வரைபடத்தில் எங்கு வேண்டுமானாலும் சொடுக்கவும்.",
+        btnSubmitReport: "சமர்ப்பித்து AI பகுப்பாய்வு செய்க",
+        regTitle: "சமூக சவால் பதிவேடு",
+        regSub: "தமிழ்நாடு முழுவதும் உள்கட்டமைப்பு மற்றும் சுகாதார பிரச்சினைகளை ஆராயுங்கள்.",
+        backReg: "← சவால் பதிவேட்டுக்கு திரும்பு",
+        mapTitle: "நேரலை மாவட்ட வரைபடம்",
+        mapSub: "தமிழ்நாடு மாவட்டங்களில் உள்கட்டமைப்பு அறிக்கைகளின் நேரலை கண்காணிப்பு.",
+        loginTitle: "நிர்வாகி உள்நுழைவு",
+        loginSub: "அங்கீகரிக்கப்பட்ட மாவட்ட மற்றும் பங்குதாரர் அதிகாரிகள்",
+        btnSign: "உள்நுழைக",
+        adminQTitle: "நிர்வாக தீர்வு வரிசை",
+        adminQSub: "புகார் சுழற்சிகளை நிர்வகிக்கவும், கூட்டாளர் நிறுவனங்களை ஒதுக்கவும்.",
+        btnAddIssue: "+ சிக்கலைச் சேர்",
+        btnLogout: "வெளியேறு",
+        thTitle: "தலைப்பு",
+        thDistrict: "மாவட்டம்",
+        thCat: "வகை",
+        thUrgency: "அவசரம்",
+        thStatus: "நிலை",
+        thActions: "செயல்கள்"
+      },
+      hi: {
+        navHome: "होम",
+        navRegister: "रजिस्टर",
+        navMap: "मानचित्र",
+        navAdmin: "एडमिन कतार",
+        report: "रिपोर्ट",
+        signin: "साइन-इन",
+        subtitle: "तमिलनाडु सामाजिक समस्या और समाधान इंजन",
+        homeTitle: "तमिलनाडु की सामाजिक चुनौतियों का मिलकर समाधान",
+        homeDesc: "CIVICFORCE नागरिकों द्वारा रिपोर्ट की गई समस्याओं को विश्वविद्यालयों और नगर निगम विभागों से जोड़ता है।",
+        btnReportProb: "समस्या की रिपोर्ट करें",
+        btnBrowseReg: "चुनौती रजिस्टर देखें",
+        statActive: "सक्रिय चुनौतियाँ",
+        statHigh: "उच्च प्राथमिकता वाली समस्याएँ",
+        statUniv: "साझेदार विश्वविद्यालय",
+        statDist: "तमिलनाडु जिले",
+        recentHeading: "हाल की चुनौतियाँ",
+        viewAll: "सभी देखें →",
+        repPageTitle: "सामाजिक समस्या की रिपोर्ट करें",
+        repPageSub: "नगर निगम या बुनियादी ढांचे के मुद्दों को सबमिट करें।",
+        lblTitle: "शीर्षक *",
+        lblDistrict: "जिला *",
+        lblLandmark: "लैंडमार्क / क्षेत्र",
+        lblDesc: "विस्तृत विवरण *",
+        lblPinMap: "मानचित्र पर स्थान चिह्नित करें",
+        mapHint: "सटीक निर्देशांक सेट करने के लिए मानचित्र पर कहीं भी क्लिक करें।",
+        btnSubmitReport: "सबमिट करें और AI जाँच चलाएँ",
+        regTitle: "सामाजिक चुनौती रजिस्टर",
+        regSub: "तमिलनाडु में बुनियादी ढांचे और स्वच्छता के मुद्दों का अन्वेषण करें।",
+        backReg: "← चुनौती रजिस्टर पर वापस जाएं",
+        mapTitle: "लाइव जिला मानचित्र",
+        mapSub: "तमिलनाडु जिलों में बुनियादी ढांचा रिपोर्टों की रीयल-टाइम ट्रैकिंग।",
+        loginTitle: "एडमिन पोर्टल साइन-इन",
+        loginSub: "अधिकृत जिला और भागीदार अधिकारी",
+        btnSignin: "साइन इन करें",
+        adminQTitle: "प्रशासक समाधान कतार",
+        adminQSub: "रिपोर्ट चक्र का प्रबंधन करें और भागीदार संस्थान निर्दिष्ट करें।",
+        btnAddIssue: "+ समस्या जोड़ें",
+        btnLogout: "साइन आउट",
+        thTitle: "शीर्षक",
+        thDistrict: "जिला",
+        thCat: "श्रेणी",
+        thUrgency: "प्राथमिकता",
+        thStatus: "स्थिति",
+        thActions: "कारਵਾਈ"
+      },
+      te: {
+        navHome: "హోమ్",
+        navRegister: "రిజిస్టర్",
+        navMap: "మ్యాప్",
+        navAdmin: "అడ్మిన్ క్యూ",
+        report: "రిపోర్ట్",
+        signin: "సైన్-ఇన్",
+        subtitle: "తమిళనాడు సామాజిక సమస్య & పరిష్కార ఇంజిన్",
+        homeTitle: "తమిళనాడు సామాజిక సవాళ్లను కలిసి పరిష్కరిద్దాం",
+        homeDesc: "సివిక్‌ఫోర్స్ పౌరుల సమస్యలను విశ్వవిద్యాలయాలు మరియు మున్సిపల్ విభాగాలతో అనుసంధానిస్తుంది.",
+        btnReportProb: "సమస్యను నివేదించండి",
+        btnBrowseReg: "సవాల్ రిజిస్టర్‌ని బ్రౌజ్ చేయండి",
+        statActive: "క్రియాశీల సవాళ్లు",
+        statHigh: "అధిక ప్రాధాన్యత సమస్యలు",
+        statUniv: "భాగస్వామ్య విశ్వవిద్యాలయాలు",
+        statDist: "తమిళనాడు జిల్లాలు",
+        recentHeading: "ఇటీవలి సవాళ్లు",
+        viewAll: "అన్నీ చూడండి →",
+        repPageTitle: "సామాజిక సమస్యను నివేదించండి",
+        repPageSub: "మున్సిపల్ లేదా మౌలిక సదుపాయాల సమస్యలను సమర్పించండి.",
+        lblTitle: "శీర్షిక *",
+        lblDistrict: "జిల్లా *",
+        lblLandmark: " ల్యాండ్‌మార్క్",
+        lblDesc: "వివరణాత్మక వివరణ *",
+        lblPinMap: "మ్యాప్‌లో లొకేషన్‌ని పిన్ చేయండి",
+        mapHint: "కోఆర్డినేట్‌లను సెట్ చేయడానికి మ్యాప్‌లో ఎక్కడైనా క్లిక్ చేయండి.",
+        btnSubmitReport: "సమర్పించండి & AI ట్రైజ్ చేయండి",
+        regTitle: "సామాజిక సవాల్ రిజిస్టర్",
+        regSub: "తమిళనాడు వ్యాప్తంగా మౌలిక సదుపాయాల సమస్యలను అన్వేషించండి.",
+        backReg: "← సవాల్ రిజిస్టర్‌కి వెళ్ళు",
+        mapTitle: "లైవ్ జిల్లా మ్యాప్",
+        mapSub: "తమిళనాడు జిల్లాల్లో మౌలిక సదుపాయాల రిపోర్ట్‌ల ట్రాకింగ్.",
+        loginTitle: "అడ్మిన్ పోర్టల్ సైన్-ఇన్",
+        loginSub: "అధికారిక జిల్లా మరియు భాగస్వామ్య అధికారులు",
+        btnSignin: "సైన్ ఇన్ చేయండి",
+        adminQTitle: "అడ్మినిస్ట్రేటర్ రిజల్యూషన్ క్యూ",
+        adminQSub: "రిపోర్ట్ లైఫ్‌సైకిళ్లను నిర్వహించండి మరియు భాగస్వామ్య సంస్థలను కేటాయించండి.",
+        btnAddIssue: "+ సమస్యను జోడించు",
+        btnLogout: "సైన్ అవుట్",
+        thTitle: "శీర్షిక",
+        thDistrict: "జిల్లా",
+        thCat: "వర్గం",
+        thUrgency: "అత్యవసరత",
+        thStatus: "స్థితి",
+        thActions: "చర్యలు"
+      },
+      ml: {
+        navHome: "ഹോം",
+        navRegister: "രജിസ്റ്റർ",
+        navMap: "മാപ്പ്",
+        navAdmin: "അഡ്മിൻ ക്യൂ",
+        report: "റിപ്പോർട്ട്",
+        signin: "സൈൻ-ഇൻ",
+        subtitle: "തമിഴ്‌നാട് സാമൂഹിക പ്രശ്ന പരിഹാര എഞ്ചിൻ",
+        homeTitle: "തമിഴ്‌നാടിന്റെ സാമൂഹിക വെല്ലുവിളികൾ ഒരുമിച്ച് പരിഹരിക്കാം",
+        homeDesc: "പൗരന്മാർ റിപ്പോർട്ട് ചെയ്ത സാമൂഹിക പ്രശ്നങ്ങളെ യൂണിവേഴ്സിറ്റികളുമായും മുനിസിപ്പൽ വകുപ്പുകളുമായും സിവിക്ഫോഴ്സ് ബന്ധിപ്പിക്കുന്നു.",
+        btnReportProb: "ഒരു പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക",
+        btnBrowseReg: "ചലഞ്ച് രജിസ്റ്റർ ബ്രൗസ് ചെയ്യുക",
+        statActive: "സജീവമായ വെല്ലുവിളികൾ",
+        statHigh: "ഉയർന്ന മുൻഗണനയുള്ള പ്രശ്നങ്ങൾ",
+        statUniv: "പങ്കാളി സർവ്വകലാശാലകൾ",
+        statDist: "തമിഴ്‌നാട് ജില്ലകൾ",
+        recentHeading: "സമീപകാല വെല്ലുവിളികൾ",
+        viewAll: "എല്ലാ കാണുക →",
+        repPageTitle: "സാമൂഹിക പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക",
+        repPageSub: "മുനിസിപ്പൽ പ്രശ്നങ്ങൾ സമർപ്പിക്കുക.",
+        lblTitle: "തലക്കെട്ട് *",
+        lblDistrict: "ജില്ല *",
+        lblLandmark: " ലാൻഡ്മാർക്ക്",
+        lblDesc: "വിശദമായ വിവരണം *",
+        lblPinMap: "മാപ്പിൽ ലൊക്കേഷൻ പിൻ ചെയ്യുക",
+        mapHint: "കൃത്യമായ കോർഡിനേറ്റുകൾ സജ്ജമാക്കാൻ മാപ്പിൽ എവിടെയും ക്ലിക്ക് ചെയ്യുക.",
+        btnSubmitReport: "സമർപ്പിക്കുക & AI ട്രൈജ് പ്രവർത്തിപ്പിക്കുക",
+        regTitle: "സാമൂഹിക വെല്ലുവിളി രജിസ്റ്റർ",
+        regSub: "തമിഴ്‌നാട്ടിലുടനീളമുള്ള ഇൻഫ്രാസ്ട്രക്ചർ പ്രശ്നങ്ങൾ പര്യവേക്ഷണം ചെയ്യുക.",
+        backReg: "← രജിസ്റ്ററിലേക്ക് മടങ്ങുക",
+        mapTitle: "ലൈവ് ജില്ലാ മാപ്പ്",
+        mapSub: "ജില്ലകളിലെ ഇൻഫ്രാസ്ട്രക്ചർ റിപ്പോർട്ടുകളുടെ തത്സമയ ട്രാക്കിംഗ്.",
+        loginTitle: "അഡ്മിൻ പോർട്ടൽ സൈൻ-ഇൻ",
+        loginSub: "അംഗീകൃത ജില്ലാ, പങ്കാളി ഉദ്യോഗസ്ഥർ",
+        btnSignin: "സൈൻ ഇൻ ചെയ്യുക",
+        adminQTitle: "അഡ്മിനിസ്ട്രേറ്റർ ക്യൂ",
+        adminQSub: "റിപ്പോർട്ട് ലൈഫ് സൈക്കിളുകൾ നിയന്ത്രിക്കുക.",
+        btnAddIssue: "+ പ്രശ്നം ചേർക്കുക",
+        btnLogout: "സൈൻ ഔട്ട്",
+        thTitle: "തലക്കെട്ട്",
+        thDistrict: "ജില്ല",
+        thCat: "വിഭാഗം",
+        thUrgency: "അടിയന്തിരത",
+        thStatus: "ാവസ്ഥ",
+        thActions: "നടപടികൾ"
+      }
+    };
 
     window.addEventListener('DOMContentLoaded', () => {
       if (localStorage.getItem('civicforce_theme') === 'dark') {
@@ -423,6 +667,62 @@
       updateThemeIcon();
       fetchReports();
     });
+
+    function changeLanguage(langCode) {
+      currentLang = langCode;
+      const t = translations[langCode] || translations['en'];
+
+      document.getElementById('nav-home').innerText = t.navHome;
+      document.getElementById('nav-challenges').innerText = t.navRegister;
+      document.getElementById('nav-map').innerHTML = `<span>🗺️</span> ${t.navMap}`;
+      document.getElementById('nav-admin-queue').innerHTML = `<span>🛡️</span> ${t.navAdmin}`;
+      document.getElementById('btn-report-nav').innerText = t.report;
+      document.getElementById('btn-signin-nav').innerText = t.signin;
+      document.getElementById('lbl-subtitle').innerText = t.subtitle;
+      document.getElementById('home-title').innerText = t.homeTitle;
+      document.getElementById('home-desc').innerText = t.homeDesc;
+      document.getElementById('home-btn-report').innerText = t.btnReportProb;
+      document.getElementById('home-btn-browse').innerText = t.btnBrowseReg;
+      document.getElementById('stat-label-active').innerText = t.statActive;
+      document.getElementById('stat-label-high').innerText = t.statHigh;
+      document.getElementById('stat-label-univ').innerText = t.statUniv;
+      document.getElementById('stat-label-dist').innerText = t.statDist;
+      document.getElementById('recent-heading').innerText = t.recentHeading;
+      document.getElementById('recent-view-all').innerText = t.viewAll;
+
+      document.getElementById('rep-page-title').innerText = t.repPageTitle;
+      document.getElementById('rep-page-subtitle').innerText = t.repPageSub;
+      document.getElementById('lbl-title').innerText = t.lblTitle;
+      document.getElementById('lbl-district').innerText = t.lblDistrict;
+      document.getElementById('lbl-landmark').innerText = t.lblLandmark;
+      document.getElementById('lbl-desc').innerText = t.lblDesc;
+      document.getElementById('lbl-pinmap').innerText = t.lblPinMap;
+      document.getElementById('lbl-map-hint').innerText = t.mapHint;
+      document.getElementById('btn-submit-report').innerText = t.btnSubmitReport;
+
+      document.getElementById('reg-title').innerText = t.regTitle;
+      document.getElementById('reg-subtitle').innerText = t.regSub;
+      document.getElementById('btn-back-reg').innerText = t.backReg;
+
+      document.getElementById('map-page-title').innerText = t.mapTitle;
+      document.getElementById('map-page-subtitle').innerText = t.mapSub;
+
+      document.getElementById('login-title').innerText = t.loginTitle;
+      document.getElementById('login-subtitle').innerText = t.loginSub;
+      document.getElementById('btn-signin-submit').innerText = t.btnSignin;
+
+      document.getElementById('admin-q-title').innerText = t.adminQTitle;
+      document.getElementById('admin-q-subtitle').innerText = t.adminQSub;
+      document.getElementById('admin-btn-add').innerText = t.btnAddIssue;
+      document.getElementById('admin-btn-logout').innerText = t.btnLogout;
+
+      document.getElementById('th-title').innerText = t.thTitle;
+      document.getElementById('th-district').innerText = t.thDistrict;
+      document.getElementById('th-category').innerText = t.thCat;
+      document.getElementById('th-urgency').innerText = t.thUrgency;
+      document.getElementById('th-status').innerText = t.thStatus;
+      document.getElementById('th-actions').innerText = t.thActions;
+    }
 
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
